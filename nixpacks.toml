@@ -1,0 +1,22 @@
+[providers]
+  php = "php"
+
+[phases.setup]
+  # Usamos PHP 8.2 que es el estándar más estable en Railway para Laravel 10
+  nixPkgs = ["php82", "php82Packages.composer"]
+
+[phases.install]
+  # Instalamos dependencias de PHP sin las de desarrollo
+  cmds = ["composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist"]
+
+[phases.build]
+  # Limpiamos y cacheamos la configuración para producción
+  cmds = [
+    "php artisan config:cache",
+    "php artisan route:cache",
+    "php artisan view:cache"
+  ]
+
+[start]
+  # Comando para iniciar el servidor web en Railway
+  cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
