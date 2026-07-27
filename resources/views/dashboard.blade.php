@@ -77,9 +77,11 @@
             Sistema en línea — Cartera de microcrédito · Cochabamba
         </p>
     </div>
-    <div class="text-right hidden md:block">
-        <p class="text-xs text-gray-400 uppercase tracking-widest">Actualizado</p>
-        <p class="text-sm font-bold text-gray-700" id="live-clock">—</p>
+    <div class="text-left sm:text-right mt-2 sm:mt-0">
+        <p class="text-xs text-gray-600 font-medium bg-white/60 inline-flex items-center px-3 py-1.5 rounded-full border border-gray-200/60 shadow-sm backdrop-blur-sm">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span id="live-clock">—</span>
+        </p>
     </div>
 </div>
 
