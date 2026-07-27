@@ -23,6 +23,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Leaflet CSS for Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Alpine.js for Mobile Menu -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -46,9 +48,10 @@
     
     @auth
     <!-- Glassmorphic Navbar -->
-    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50 shadow-sm transition-all duration-300">
+    <nav x-data="{ mobileMenuOpen: false }" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
+                <!-- Left side: Logo & Desktop Links -->
                 <div class="flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex-shrink-0 flex items-center space-x-2 group">
                         <!-- Logo de Montaña (Tunari) -->
@@ -60,6 +63,7 @@
                         <span class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary tracking-tight">CrediTunari</span>
                     </a>
                     
+                    <!-- Desktop Menu -->
                     <div class="hidden sm:-my-px sm:ml-10 sm:flex sm:space-x-4">
                         <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'bg-primary/10 text-primary font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             Dashboard
@@ -72,15 +76,53 @@
                         </a>
                     </div>
                 </div>
-                <div class="hidden sm:flex sm:items-center sm:ml-6">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="flex items-center space-x-1 text-sm font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            <span>Salir</span>
+
+                <!-- Right side: Logout (Desktop) & Hamburger (Mobile) -->
+                <div class="flex items-center">
+                    <!-- Desktop Logout -->
+                    <div class="hidden sm:flex sm:items-center sm:ml-6">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex items-center space-x-1 text-sm font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                <span>Salir</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="-mr-2 flex items-center sm:hidden">
+                        <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary" aria-expanded="false">
+                            <span class="sr-only">Abrir menú principal</span>
+                            <!-- Icon when menu is closed -->
+                            <svg x-show="!mobileMenuOpen" class="block w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <!-- Icon when menu is open -->
+                            <svg x-show="mobileMenuOpen" style="display: none;" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                         </button>
-                    </form>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu, show/hide based on menu state. -->
+        <div x-show="mobileMenuOpen" x-transition.opacity style="display: none;" class="sm:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md">
+            <div class="pt-2 pb-3 space-y-1 px-4">
+                <a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'bg-primary/10 text-primary font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ route('clients.index') }}" class="{{ Request::is('clients*') ? 'bg-primary/10 text-primary font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} block px-3 py-2 rounded-md text-base font-medium">Clientes</a>
+                <a href="{{ route('loans.index') }}" class="{{ Request::is('loans*') ? 'bg-primary/10 text-primary font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} block px-3 py-2 rounded-md text-base font-medium">Préstamos</a>
+            </div>
+            <div class="pt-4 pb-4 border-t border-gray-200 px-4">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="flex items-center space-x-2 w-full text-left text-red-600 hover:bg-red-50 px-3 py-2 rounded-md text-base font-medium transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
