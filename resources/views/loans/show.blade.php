@@ -16,31 +16,32 @@
 @section('content')
 
 {{-- ===== HEADER ===== --}}
-<div class="mb-8 flex justify-between items-center bg-white/60 backdrop-blur-xl p-6 rounded-3xl shadow-sm border border-white/40 print-hide">
-    <div>
-        <h1 class="text-3xl font-black text-gray-900 tracking-tight">Plan de Pagos</h1>
-        <p class="text-sm text-gray-500 mt-1">
-            Cliente: <span class="font-bold text-teal-700 text-base">{{ $loan->client->name }}</span>
+<div class="mb-8 flex flex-col lg:flex-row justify-between items-center lg:items-start bg-white/60 backdrop-blur-xl p-6 rounded-3xl shadow-sm border border-white/40 print-hide gap-6">
+    <div class="w-full lg:w-auto text-center lg:text-left">
+        <h1 class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Plan de Pagos</h1>
+        <p class="text-sm text-gray-500 mt-1 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-1 sm:gap-2">
+            <span>Cliente: <span class="font-bold text-teal-700 text-base">{{ $loan->client->name }}</span></span>
             @if($loan->status == 'paid')
-                &nbsp;·&nbsp;<span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-black border border-emerald-200">
+                <span class="hidden sm:inline">·</span>
+                <span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-black border border-emerald-200">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                     <span>PRÉSTAMO CANCELADO</span>
                 </span>
             @endif
         </p>
     </div>
-    <div class="flex items-center space-x-3">
+    <div class="flex flex-col sm:flex-row items-center w-full lg:w-auto gap-3 sm:space-x-3 sm:gap-0">
         {{-- PDF del Plan Completo --}}
-        <button id="downloadPdfBtn" class="flex items-center space-x-2 bg-white hover:bg-red-50 text-red-600 font-bold py-2.5 px-4 rounded-xl border border-red-200 shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
+        <button id="downloadPdfBtn" class="w-full sm:w-auto justify-center flex items-center space-x-2 bg-white hover:bg-red-50 text-red-600 font-bold py-2.5 px-4 rounded-xl border border-red-200 shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
-            <span class="hidden sm:inline">PDF Plan</span>
+            <span>PDF Plan</span>
         </button>
         {{-- PDF de Pagos Realizados --}}
-        <button id="downloadPaymentsPdfBtn" class="flex items-center space-x-2 bg-white hover:bg-emerald-50 text-emerald-700 font-bold py-2.5 px-4 rounded-xl border border-emerald-200 shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
+        <button id="downloadPaymentsPdfBtn" class="w-full sm:w-auto justify-center flex items-center space-x-2 bg-white hover:bg-emerald-50 text-emerald-700 font-bold py-2.5 px-4 rounded-xl border border-emerald-200 shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span class="hidden sm:inline">PDF Pagos</span>
+            <span>PDF Pagos</span>
         </button>
-        <a href="{{ route('loans.index') }}" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl transition-colors">
+        <a href="{{ route('loans.index') }}" class="w-full sm:w-auto justify-center flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             <span>Volver</span>
         </a>
