@@ -27,6 +27,10 @@ class ClientController extends Controller
             'address' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+        ], [
+            'ci.unique' => 'Este Carnet de Identidad (CI) ya está registrado para otro cliente en el sistema.',
+            'ci.required' => 'El Carnet de Identidad es obligatorio.',
+            'name.required' => 'El nombre completo es obligatorio.'
         ]);
 
         Client::create($validated);
