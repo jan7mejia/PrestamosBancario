@@ -206,10 +206,10 @@
 @if($client->photo_path)
 <div id="photoModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-sm cursor-pointer" onclick="closePhotoModal()"></div>
-    <div class="relative w-full max-w-3xl flex flex-col items-center z-10">
-        <button onclick="closePhotoModal()" class="fixed top-4 right-4 z-[70] text-white hover:text-gray-300 transition-all bg-white/10 hover:bg-white/20 rounded-full p-3 backdrop-blur-md">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+    <button onclick="closePhotoModal()" class="absolute top-4 right-4 sm:top-6 sm:right-6 z-[70] text-white bg-slate-800/50 hover:bg-red-500 rounded-full p-2 border border-slate-600 shadow-xl transition-colors">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+    <div class="relative w-full max-w-3xl flex flex-col items-center z-10 p-4 mt-12 sm:mt-0">
         <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-white object-contain">
     </div>
 </div>

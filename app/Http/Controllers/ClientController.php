@@ -35,15 +35,22 @@ class ClientController extends Controller
             'name.required' => 'El nombre completo es obligatorio.'
         ]);
 
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
-            $destinationPath = public_path('uploads/clients');
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
+        try {
+            if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                if (!$file->isValid()) {
+                    return back()->withErrors(['photo' => 'La imagen supera el límite de peso o está dañada. Intenta con una imagen más pequeña.'])->withInput();
+                }
+                $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
+                $destinationPath = public_path('uploads/clients');
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+                $file->move($destinationPath, $filename);
+                $validated['photo_path'] = 'uploads/clients/' . $filename;
             }
-            $file->move($destinationPath, $filename);
-            $validated['photo_path'] = 'uploads/clients/' . $filename;
+        } catch (\Exception $e) {
+            return back()->withErrors(['photo' => 'Ocurrió un error en el servidor al guardar la foto.'])->withInput();
         }
 
         Client::create($validated);
@@ -73,23 +80,30 @@ class ClientController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
-        if ($request->hasFile('photo')) {
-            if ($client->photo_path && file_exists(public_path($client->photo_path))) {
-                @unlink(public_path($client->photo_path));
-            }
-            // Por si acaso era del storage anterior
-            if ($client->photo_path && str_starts_with($client->photo_path, 'clients/')) {
-                Storage::disk('public')->delete($client->photo_path);
-            }
+        try {
+            if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                if (!$file->isValid()) {
+                    return back()->withErrors(['photo' => 'La imagen supera el límite de peso o está dañada. Intenta con una imagen más pequeña.'])->withInput();
+                }
 
-            $file = $request->file('photo');
-            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
-            $destinationPath = public_path('uploads/clients');
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
+                if ($client->photo_path && file_exists(public_path($client->photo_path))) {
+                    @unlink(public_path($client->photo_path));
+                }
+                if ($client->photo_path && str_starts_with($client->photo_path, 'clients/')) {
+                    Storage::disk('public')->delete($client->photo_path);
+                }
+
+                $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
+                $destinationPath = public_path('uploads/clients');
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+                $file->move($destinationPath, $filename);
+                $validated['photo_path'] = 'uploads/clients/' . $filename;
             }
-            $file->move($destinationPath, $filename);
-            $validated['photo_path'] = 'uploads/clients/' . $filename;
+        } catch (\Exception $e) {
+            return back()->withErrors(['photo' => 'Ocurrió un error en el servidor al guardar la foto.'])->withInput();
         }
 
         $client->update($validated);
