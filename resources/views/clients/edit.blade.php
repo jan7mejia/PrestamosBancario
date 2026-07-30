@@ -9,7 +9,7 @@
 </div>
 
 <div class="glass rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <form action="{{ route('clients.update', $client) }}" method="POST" class="p-8">
+    <form action="{{ route('clients.update', $client) }}" method="POST" enctype="multipart/form-data" class="p-8">
         @csrf
         @method('PUT')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -36,6 +36,23 @@
                 <div>
                     <label for="address" class="block text-sm font-medium text-gray-700">Dirección</label>
                     <textarea name="address" id="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">{{ old('address', $client->address) }}</textarea>
+                </div>
+                
+                <div>
+                    <label for="photo" class="block text-sm font-medium text-gray-700 mb-1.5">Fotografía del Cliente (opcional)</label>
+                    @if($client->photo_path)
+                        <div class="mb-3">
+                            <img src="{{ asset('storage/' . $client->photo_path) }}" alt="Foto de {{ $client->name }}" class="w-24 h-24 object-cover rounded-xl shadow-md border border-gray-200">
+                        </div>
+                    @endif
+                    <input type="file" name="photo" id="photo" accept="image/*"
+                           class="block w-full text-sm text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-blue-50 file:text-blue-700
+                                  hover:file:bg-blue-100 transition-all">
+                    @error('photo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
             </div>
 

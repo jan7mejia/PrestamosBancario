@@ -16,6 +16,7 @@ class Client extends Model
         'address',
         'latitude',
         'longitude',
+        'photo_path',
     ];
 
     public function loans()

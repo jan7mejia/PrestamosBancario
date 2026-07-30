@@ -11,7 +11,7 @@
 </div>
 
 <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 overflow-hidden">
-    <form action="{{ route('clients.store') }}" method="POST" class="p-8 sm:p-10">
+    <form action="{{ route('clients.store') }}" method="POST" enctype="multipart/form-data" class="p-8 sm:p-10">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <!-- Datos Básicos -->
@@ -41,6 +41,18 @@
                     <label for="address" class="block text-sm font-bold text-gray-700 mb-1.5">Dirección</label>
                     <textarea name="address" id="address" rows="3" 
                               class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">{{ old('address') }}</textarea>
+                </div>
+                
+                <div>
+                    <label for="photo" class="block text-sm font-bold text-gray-700 mb-1.5">Fotografía del Cliente</label>
+                    <input type="file" name="photo" id="photo" accept="image/*"
+                           class="block w-full text-sm text-gray-500 bg-white border border-gray-200 rounded-xl shadow-sm py-2 px-3
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-xl file:border-0
+                                  file:text-sm file:font-bold
+                                  file:bg-teal-50 file:text-teal-700
+                                  hover:file:bg-teal-100 transition-all">
+                    @error('photo') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
 

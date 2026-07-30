@@ -17,6 +17,9 @@ class Loan extends Model
         'amortization_system', // 'frances', 'aleman', 'americano'
         'status', // 'active', 'paid', 'defaulted'
         'start_date',
+        'guarantee_type',
+        'guarantee_details',
+        'contract_type',
     ];
 
     protected $casts = [

@@ -36,6 +36,22 @@
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
             <span>PDF Plan</span>
         </button>
+        {{-- Botón de Contrato (Si aplica) --}}
+        @if($loan->contract_type)
+        <a href="{{ route('loans.contract', $loan) }}" target="_blank" class="w-full sm:w-auto justify-center flex items-center space-x-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Contrato</span>
+        </a>
+        @endif
+        
+        {{-- Botón de Abono a Capital --}}
+        @if($loan->status !== 'paid')
+        <button onclick="openAmortizeModal()" class="w-full sm:w-auto justify-center flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Abono Capital</span>
+        </button>
+        @endif
+
         {{-- PDF de Pagos Realizados --}}
         <button id="downloadPaymentsPdfBtn" class="w-full sm:w-auto justify-center flex items-center space-x-2 bg-white hover:bg-emerald-50 text-emerald-700 font-bold py-2.5 px-4 rounded-xl border border-emerald-200 shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -295,6 +311,32 @@
     </div>
 </div>
 
+{{-- ===== MODAL DE ABONO A CAPITAL ===== --}}
+<div id="amortizeModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAmortizeModal()"></div>
+    <div class="modal-box relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 border border-white/50">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-2xl font-black text-gray-900">Abono a Capital</h3>
+            <p class="text-gray-500 text-sm mt-1">Ingresa el monto para reducir el capital y recalcular las cuotas restantes.</p>
+        </div>
+        <form method="POST" action="{{ route('loans.amortize', $loan) }}">
+            @csrf
+            <div class="mb-5">
+                <label for="amortize_amount" class="block text-sm font-bold text-gray-700 mb-1.5">Monto a abonar (Bs.)</label>
+                <input type="number" step="0.01" name="amount" id="amortize_amount" required min="1" max="{{ $loan->amortizations->where('status', 'pending')->first()->remaining_balance ?? 0 }}" class="block w-full bg-slate-50 border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                <p class="text-xs text-gray-400 mt-1">Capital Vivo Actual: Bs. {{ number_format($loan->amortizations->where('status', 'pending')->first()->remaining_balance ?? 0, 2) }}</p>
+            </div>
+            <div class="flex space-x-3">
+                <button type="button" onclick="closeAmortizeModal()" class="flex-1 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors">Cancelar</button>
+                <button type="submit" class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black shadow-lg shadow-blue-500/30 transition-all duration-300">Procesar Abono</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -364,9 +406,23 @@
         });
     });
 
+    // ===== MODAL ABONO CAPITAL =====
+    function openAmortizeModal() {
+        document.getElementById('amortizeModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeAmortizeModal() {
+        document.getElementById('amortizeModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
     // Cerrar modales con ESC
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') { closePayModal(); closeUnpayModal(); }
+        if (e.key === 'Escape') { 
+            closePayModal(); 
+            closeUnpayModal(); 
+            closeAmortizeModal();
+        }
     });
 </script>
 @endpush

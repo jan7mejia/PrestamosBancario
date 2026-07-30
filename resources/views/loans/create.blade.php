@@ -56,6 +56,33 @@
             </div>
 
             <div class="space-y-7 bg-slate-50/50 p-6 rounded-2xl border border-gray-100">
+                <h3 class="text-sm font-black text-teal-700 uppercase tracking-wider mb-4 border-b border-teal-100 pb-2">Garantías y Contratos</h3>
+                <div>
+                    <label for="guarantee_type" class="block text-sm font-bold text-gray-700 mb-1.5">Tipo de Garantía</label>
+                    <select id="guarantee_type" name="guarantee_type" class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
+                        <option value="">Sin Garantía Específica</option>
+                        <option value="prendaria">Garantía Prendaria (Joya, Vehículo, etc.)</option>
+                        <option value="hipoteca">Garantía Hipotecaria (Inmueble, Terreno)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="guarantee_details" class="block text-sm font-bold text-gray-700 mb-1.5">Detalles de la Garantía</label>
+                    <textarea name="guarantee_details" id="guarantee_details" rows="2" placeholder="Ej: Anillo de oro 18k, 15 gramos..." class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">{{ old('guarantee_details') }}</textarea>
+                </div>
+
+                <div>
+                    <label for="contract_type" class="block text-sm font-bold text-gray-700 mb-1.5">Tipo de Contrato a Generar</label>
+                    <select id="contract_type" name="contract_type" class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
+                        <option value="">Ninguno</option>
+                        <option value="garantia_prendaria">1. Préstamo con Garantía Prendaria</option>
+                        <option value="pacto_rescate">2. Contrato de Venta con Pacto de Rescate</option>
+                        <option value="dacion_pago">3. Dación en Pago</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-7 bg-slate-50/50 p-6 rounded-2xl border border-gray-100">
                 <h3 class="text-sm font-black text-teal-700 uppercase tracking-wider mb-4 border-b border-teal-100 pb-2">Plazos y Fechas</h3>
                 <div>
                     <label for="term_months" class="block text-sm font-bold text-gray-700 mb-1.5">Plazo Total (Meses)</label>

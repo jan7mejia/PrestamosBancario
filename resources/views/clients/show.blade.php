@@ -17,9 +17,13 @@
 <div class="mb-8 flex flex-col md:flex-row justify-between items-center md:items-start lg:items-center bg-white/60 backdrop-blur-xl p-6 rounded-3xl shadow-sm border border-white/40 gap-6">
     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-5 w-full md:w-auto">
         {{-- Avatar Grande --}}
-        <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0">
-            {{ strtoupper(substr($client->name, 0, 1)) }}
-        </div>
+        @if($client->photo_path)
+            <img src="{{ asset('storage/' . $client->photo_path) }}" alt="{{ $client->name }}" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
+        @else
+            <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
+                {{ strtoupper(substr($client->name, 0, 1)) }}
+            </div>
+        @endif
         <div>
             <h1 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{{ $client->name }}</h1>
             <div class="mt-2 flex flex-wrap justify-center sm:justify-start gap-2">

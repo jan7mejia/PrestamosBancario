@@ -125,8 +125,25 @@
 
         @foreach($clients as $client)
             @if($client->latitude && $client->longitude)
+                @php
+                    $deuda = $client->loans->flatMap->amortizations->where('status', 'pending')->sum('installment_amount');
+                    $foto = $client->photo_path ? asset('storage/' . $client->photo_path) : null;
+                @endphp
+                
+                var popupContent = `
+                    <div class="text-center w-36">
+                        @if($foto)
+                            <img src="{{ $foto }}" class="w-16 h-16 object-cover rounded-full mx-auto mb-2 border-2 border-teal-500 shadow-sm">
+                        @else
+                            <div class="w-16 h-16 bg-teal-100 rounded-full mx-auto mb-2 flex items-center justify-center text-teal-600 font-bold text-xl border-2 border-teal-500 shadow-sm">{{ strtoupper(substr($client->name, 0, 1)) }}</div>
+                        @endif
+                        <strong class="block text-sm text-gray-900 leading-tight">{{ $client->name }}</strong>
+                        <span class="block text-xs text-red-500 font-bold mt-1">Deuda: Bs. {{ number_format($deuda, 2) }}</span>
+                    </div>
+                `;
+
                 var marker = L.marker([{{ $client->latitude }}, {{ $client->longitude }}])
-                    .bindPopup("<b>{{ $client->name }}</b><br>{{ $client->phone }}")
+                    .bindPopup(popupContent)
                     .addTo(map);
                 markers.push({
                     lat: {{ $client->latitude }},

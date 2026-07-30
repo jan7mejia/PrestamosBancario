@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
@@ -27,11 +28,16 @@ class ClientController extends Controller
             'address' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'ci.unique' => 'Este Carnet de Identidad (CI) ya está registrado para otro cliente en el sistema.',
             'ci.required' => 'El Carnet de Identidad es obligatorio.',
             'name.required' => 'El nombre completo es obligatorio.'
         ]);
+
+        if ($request->hasFile('photo')) {
+            $validated['photo_path'] = $request->file('photo')->store('clients', 'public');
+        }
 
         Client::create($validated);
 
@@ -57,7 +63,15 @@ class ClientController extends Controller
             'address' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            if ($client->photo_path) {
+                Storage::disk('public')->delete($client->photo_path);
+            }
+            $validated['photo_path'] = $request->file('photo')->store('clients', 'public');
+        }
 
         $client->update($validated);
 
