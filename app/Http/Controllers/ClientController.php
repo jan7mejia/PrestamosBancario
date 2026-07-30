@@ -49,13 +49,11 @@ class ClientController extends Controller
                 $file->move($destinationPath, $filename);
                 $validated['photo_path'] = 'uploads/clients/' . $filename;
             }
+            Client::create($validated);
+            return redirect()->route('clients.index')->with('success', 'Cliente registrado exitosamente.');
         } catch (\Exception $e) {
-            return back()->withErrors(['photo' => 'Ocurrió un error en el servidor al guardar la foto.'])->withInput();
+            return back()->withErrors(['photo' => 'Hubo un problema al registrar: ' . $e->getMessage()])->withInput();
         }
-
-        Client::create($validated);
-
-        return redirect()->route('clients.index')->with('success', 'Cliente registrado exitosamente.');
     }
 
     public function show(Client $client)
@@ -102,12 +100,10 @@ class ClientController extends Controller
                 $file->move($destinationPath, $filename);
                 $validated['photo_path'] = 'uploads/clients/' . $filename;
             }
+            $client->update($validated);
+            return redirect()->route('clients.show', $client)->with('success', 'Datos del cliente actualizados exitosamente.');
         } catch (\Exception $e) {
-            return back()->withErrors(['photo' => 'Ocurrió un error en el servidor al guardar la foto.'])->withInput();
+            return back()->withErrors(['photo' => 'Hubo un problema al actualizar: ' . $e->getMessage()])->withInput();
         }
-
-        $client->update($validated);
-
-        return redirect()->route('clients.show', $client)->with('success', 'Datos del cliente actualizados exitosamente.');
     }
 }
