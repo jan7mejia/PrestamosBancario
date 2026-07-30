@@ -18,7 +18,7 @@
     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-5 w-full md:w-auto">
         {{-- Avatar Grande --}}
         @if($client->photo_path)
-            <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
+            <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" onclick="openPhotoModal()" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white cursor-pointer hover:scale-105 transition-transform">
         @else
             <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
                 {{ strtoupper(substr($client->name, 0, 1)) }}
@@ -202,6 +202,19 @@
     @endforelse
 </div>
 
+{{-- ===== MODAL DE FOTO ===== --}}
+@if($client->photo_path)
+<div id="photoModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-sm cursor-pointer" onclick="closePhotoModal()"></div>
+    <div class="relative w-full max-w-3xl flex flex-col items-center z-10">
+        <button onclick="closePhotoModal()" class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors bg-white/10 rounded-full p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-white object-contain">
+    </div>
+</div>
+@endif
+
 @endsection
 
 @push('scripts')
@@ -217,4 +230,29 @@
     });
 </script>
 @endif
+
+<script>
+    // ===== MODAL FOTO =====
+    function openPhotoModal() {
+        const modal = document.getElementById('photoModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    function closePhotoModal() {
+        const modal = document.getElementById('photoModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePhotoModal();
+        }
+    });
+</script>
 @endpush

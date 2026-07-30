@@ -28,7 +28,7 @@ class ClientController extends Controller
             'address' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
         ], [
             'ci.unique' => 'Este Carnet de Identidad (CI) ya está registrado para otro cliente en el sistema.',
             'ci.required' => 'El Carnet de Identidad es obligatorio.',
@@ -38,7 +38,11 @@ class ClientController extends Controller
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
-            $file->move(public_path('uploads/clients'), $filename);
+            $destinationPath = public_path('uploads/clients');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            $file->move($destinationPath, $filename);
             $validated['photo_path'] = 'uploads/clients/' . $filename;
         }
 
@@ -66,7 +70,7 @@ class ClientController extends Controller
             'address' => 'nullable|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -80,7 +84,11 @@ class ClientController extends Controller
 
             $file = $request->file('photo');
             $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
-            $file->move(public_path('uploads/clients'), $filename);
+            $destinationPath = public_path('uploads/clients');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            $file->move($destinationPath, $filename);
             $validated['photo_path'] = 'uploads/clients/' . $filename;
         }
 
