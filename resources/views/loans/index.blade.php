@@ -53,9 +53,13 @@
                 <tr class="loan-row hover:bg-teal-50/50 transition-colors group">
                     <td class="px-6 py-5 whitespace-nowrap">
                         <div class="flex items-center space-x-3">
-                            <div class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold shadow-inner border border-slate-200">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            </div>
+                            @if($loan->client->photo_path)
+                                <img src="{{ asset($loan->client->photo_path) }}" alt="{{ $loan->client->name }}" class="flex-shrink-0 h-10 w-10 rounded-full object-cover shadow-sm border border-gray-200">
+                            @else
+                                <div class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold shadow-inner border border-slate-200">
+                                    {{ strtoupper(substr($loan->client->name, 0, 1)) }}
+                                </div>
+                            @endif
                             <div>
                                 <div class="text-sm font-bold text-gray-900 loan-client-name">{{ $loan->client->name }}</div>
                                 <div class="text-xs text-gray-500 loan-client-ci">CI: {{ $loan->client->ci }}</div>

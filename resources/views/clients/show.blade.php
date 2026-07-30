@@ -18,7 +18,7 @@
     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-5 w-full md:w-auto">
         {{-- Avatar Grande --}}
         @if($client->photo_path)
-            <img src="{{ asset('storage/' . $client->photo_path) }}" alt="{{ $client->name }}" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
+            <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
         @else
             <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
                 {{ strtoupper(substr($client->name, 0, 1)) }}

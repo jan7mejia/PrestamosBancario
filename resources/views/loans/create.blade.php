@@ -22,12 +22,19 @@
             <div class="space-y-7 lg:col-span-2">
                 <div>
                     <label for="client_id" class="block text-sm font-bold text-gray-700 mb-1.5">Seleccionar Cliente Prestatario</label>
-                    <select id="client_id" name="client_id" required class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
-                        <option value="">Seleccione un cliente de la cartera...</option>
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}">{{ $client->name }} - CI: {{ $client->ci }}</option>
-                        @endforeach
-                    </select>
+                    <div class="flex items-center gap-4">
+                        {{-- Avatar preview del cliente seleccionado --}}
+                        <div id="client-avatar-wrap" class="flex-shrink-0 w-14 h-14 rounded-2xl overflow-hidden border-2 border-dashed border-gray-200 bg-slate-50 flex items-center justify-center transition-all duration-300">
+                            <img id="client-avatar-img" src="" alt="" class="hidden w-full h-full object-cover">
+                            <svg id="client-avatar-icon" class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <select id="client_id" name="client_id" required class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
+                            <option value="">Seleccione un cliente de la cartera...</option>
+                            @foreach($clients as $client)
+                                <option value="{{ $client->id }}" data-photo="{{ $client->photo_path ? asset($client->photo_path) : '' }}" data-initial="{{ strtoupper(substr($client->name, 0, 1)) }}">{{ $client->name }} - CI: {{ $client->ci }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @error('client_id') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -185,6 +192,38 @@
 
         radios.forEach(radio => {
             radio.addEventListener('change', updateRadioStyles);
+        });
+
+        // === AVATAR DEL CLIENTE SELECCIONADO ===
+        const clientSelect = document.getElementById('client_id');
+        clientSelect.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            const photo = selected.dataset.photo;
+            const initial = selected.dataset.initial;
+            const img = document.getElementById('client-avatar-img');
+            const icon = document.getElementById('client-avatar-icon');
+            const wrap = document.getElementById('client-avatar-wrap');
+
+            if (photo) {
+                img.src = photo;
+                img.classList.remove('hidden');
+                icon.classList.add('hidden');
+                wrap.classList.remove('border-dashed', 'border-gray-200');
+                wrap.classList.add('border-solid', 'border-teal-300', 'shadow-md');
+            } else if (initial) {
+                img.classList.add('hidden');
+                icon.classList.add('hidden');
+                // Mostrar inicial como texto
+                wrap.textContent = initial;
+                wrap.classList.remove('border-dashed', 'border-gray-200');
+                wrap.classList.add('border-solid', 'border-teal-300', 'bg-teal-100', 'text-teal-600', 'font-black', 'text-xl');
+            } else {
+                img.src = '';
+                img.classList.add('hidden');
+                icon.classList.remove('hidden');
+                wrap.classList.add('border-dashed', 'border-gray-200');
+                wrap.classList.remove('border-solid', 'border-teal-300', 'shadow-md');
+            }
         });
     });
 </script>

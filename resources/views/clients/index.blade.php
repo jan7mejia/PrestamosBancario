@@ -53,9 +53,13 @@
                     <tr class="client-row hover:bg-teal-50/50 transition-colors cursor-pointer group" onclick="focusMap({{ $client->latitude ?? 'null' }}, {{ $client->longitude ?? 'null' }}, '{{ $client->name }}')">
                         <td class="px-6 py-5 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-teal-100 to-emerald-100 rounded-full flex items-center justify-center text-teal-600 font-bold shadow-inner">
-                                    {{ strtoupper(substr($client->name, 0, 1)) }}
-                                </div>
+                                @if($client->photo_path)
+                                    <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="flex-shrink-0 h-10 w-10 rounded-full object-cover shadow-sm border border-gray-200">
+                                @else
+                                    <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-teal-100 to-emerald-100 rounded-full flex items-center justify-center text-teal-600 font-bold shadow-inner">
+                                        {{ strtoupper(substr($client->name, 0, 1)) }}
+                                    </div>
+                                @endif
                                 <div class="ml-4">
                                     <div class="text-sm font-bold text-gray-900 client-name">{{ $client->name }}</div>
                                     <div class="text-xs text-gray-500">{{ Str::limit($client->address, 30) }}</div>
@@ -127,7 +131,7 @@
             @if($client->latitude && $client->longitude)
                 @php
                     $deuda = $client->loans->flatMap->amortizations->where('status', 'pending')->sum('installment_amount');
-                    $foto = $client->photo_path ? asset('storage/' . $client->photo_path) : null;
+                    $foto = $client->photo_path ? asset($client->photo_path) : null;
                 @endphp
                 
                 var popupContent = `

@@ -44,14 +44,20 @@
                 </div>
                 
                 <div>
-                    <label for="photo" class="block text-sm font-bold text-gray-700 mb-1.5">Fotografía del Cliente</label>
-                    <input type="file" name="photo" id="photo" accept="image/*"
-                           class="block w-full text-sm text-gray-500 bg-white border border-gray-200 rounded-xl shadow-sm py-2 px-3
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-xl file:border-0
-                                  file:text-sm file:font-bold
-                                  file:bg-teal-50 file:text-teal-700
-                                  hover:file:bg-teal-100 transition-all">
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Fotografía del Cliente</label>
+                    <div id="photo-drop-zone" class="relative flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-200 rounded-2xl bg-slate-50 cursor-pointer hover:border-teal-400 hover:bg-teal-50/40 transition-all duration-300 overflow-hidden" style="min-height: 140px;">
+                        <!-- Preview -->
+                        <img id="photo-preview" src="" alt="preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl">
+                        <!-- Overlay hint -->
+                        <div id="photo-hint" class="flex flex-col items-center justify-center gap-2 py-6 px-4 z-10 text-center">
+                            <div class="w-14 h-14 bg-teal-100 rounded-full flex items-center justify-center mb-1">
+                                <svg class="w-7 h-7 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <p class="text-sm font-bold text-gray-600">Haz clic o arrastra una foto</p>
+                            <p class="text-xs text-gray-400">JPG, PNG &bull; Máx. 2MB</p>
+                        </div>
+                        <input type="file" name="photo" id="photo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    </div>
                     @error('photo') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -116,6 +122,21 @@
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lng;
         });
+    });
+
+    // === PREVIEW DE FOTO ===
+    document.getElementById('photo').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('photo-preview');
+            const hint = document.getElementById('photo-hint');
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            hint.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
     });
 </script>
 @endpush

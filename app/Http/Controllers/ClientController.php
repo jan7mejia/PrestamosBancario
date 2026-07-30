@@ -36,7 +36,10 @@ class ClientController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $validated['photo_path'] = $request->file('photo')->store('clients', 'public');
+            $file = $request->file('photo');
+            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
+            $file->move(public_path('uploads/clients'), $filename);
+            $validated['photo_path'] = 'uploads/clients/' . $filename;
         }
 
         Client::create($validated);
@@ -67,10 +70,18 @@ class ClientController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if ($client->photo_path) {
+            if ($client->photo_path && file_exists(public_path($client->photo_path))) {
+                @unlink(public_path($client->photo_path));
+            }
+            // Por si acaso era del storage anterior
+            if ($client->photo_path && str_starts_with($client->photo_path, 'clients/')) {
                 Storage::disk('public')->delete($client->photo_path);
             }
-            $validated['photo_path'] = $request->file('photo')->store('clients', 'public');
+
+            $file = $request->file('photo');
+            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
+            $file->move(public_path('uploads/clients'), $filename);
+            $validated['photo_path'] = 'uploads/clients/' . $filename;
         }
 
         $client->update($validated);
