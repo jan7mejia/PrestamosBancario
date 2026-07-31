@@ -24,13 +24,14 @@ class ClientController extends Controller
         if (config('filesystems.default') === 's3' || env('FILESYSTEM_DISK') === 's3') {
             Storage::disk('s3')->put($filename, file_get_contents($file), 'public');
             
-            // Construir URL pública de Supabase manualmente si no está configurado AWS_URL
-            $endpoint = config('filesystems.disks.s3.endpoint'); // ej: https://xxxx.supabase.co/storage/v1/s3
+            // Construir URL pública de Supabase a prueba de errores
+            $endpoint = config('filesystems.disks.s3.endpoint');
             $bucket = config('filesystems.disks.s3.bucket');
             
-            if (str_contains($endpoint, 'supabase.co')) {
-                $publicEndpoint = str_replace('/s3', '/object/public/' . $bucket, $endpoint);
-                return $publicEndpoint . '/' . $filename;
+            if (str_contains((string)$endpoint, 'supabase.co')) {
+                $parsed = parse_url($endpoint);
+                $baseUrl = $parsed['scheme'] . '://' . $parsed['host'];
+                return $baseUrl . '/storage/v1/object/public/' . $bucket . '/' . $filename;
             }
 
             return Storage::disk('s3')->url($filename);
