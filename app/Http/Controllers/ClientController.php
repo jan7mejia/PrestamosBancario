@@ -8,6 +8,65 @@ use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
+    /**
+     * Guarda una foto y devuelve la ruta/URL para guardar en la BD.
+     * En producción (Render) usa S3. En local usa la carpeta public.
+     */
+    private function savePhoto($file): string
+    {
+        if (!$file->isValid()) {
+            throw new \Exception('La imagen está dañada o supera el límite de tamaño.');
+        }
+
+        $extension = $file->getClientOriginalExtension();
+        $filename  = 'clients/' . time() . '_' . uniqid() . '.' . $extension;
+
+        // Si está configurado S3 (en Render), subir a S3
+        if (config('filesystems.default') === 's3' || env('FILESYSTEM_DISK') === 's3') {
+            Storage::disk('s3')->put($filename, file_get_contents($file), 'public');
+            return Storage::disk('s3')->url($filename);
+        }
+
+        // Si está en local (Laragon), guardar en public/uploads/clients
+        $destinationPath = public_path('uploads/clients');
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0777, true);
+        }
+        $localName = time() . '_' . uniqid() . '.' . $extension;
+        $file->move($destinationPath, $localName);
+        return 'uploads/clients/' . $localName;
+    }
+
+    /**
+     * Elimina la foto anterior del almacenamiento correspondiente.
+     */
+    private function deletePhoto(?string $photoPath): void
+    {
+        if (!$photoPath) return;
+
+        // Si es una URL completa (S3), extraer la ruta relativa y borrar de S3
+        if (str_starts_with($photoPath, 'http')) {
+            try {
+                $parsed = parse_url($photoPath);
+                $key    = ltrim($parsed['path'], '/');
+                // Quitar el nombre del bucket si está en la ruta (path-style)
+                $bucket = config('filesystems.disks.s3.bucket');
+                if (str_starts_with($key, $bucket . '/')) {
+                    $key = substr($key, strlen($bucket) + 1);
+                }
+                Storage::disk('s3')->delete($key);
+            } catch (\Exception $e) {
+                // No interrumpir si no se pudo borrar
+            }
+            return;
+        }
+
+        // Si es ruta local
+        if (file_exists(public_path($photoPath))) {
+            @unlink(public_path($photoPath));
+        }
+    }
+
     public function index()
     {
         $clients = Client::all();
@@ -22,37 +81,27 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'ci' => 'required|string|unique:clients,ci|max:20',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'latitude' => 'nullable|numeric',
+            'name'      => 'required|string|max:255',
+            'ci'        => 'required|string|unique:clients,ci|max:20',
+            'phone'     => 'nullable|string|max:20',
+            'address'   => 'nullable|string',
+            'latitude'  => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
+            'photo'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
         ], [
-            'ci.unique' => 'Este Carnet de Identidad (CI) ya está registrado para otro cliente en el sistema.',
-            'ci.required' => 'El Carnet de Identidad es obligatorio.',
-            'name.required' => 'El nombre completo es obligatorio.'
+            'ci.unique'    => 'Este Carnet de Identidad (CI) ya está registrado para otro cliente en el sistema.',
+            'ci.required'  => 'El Carnet de Identidad es obligatorio.',
+            'name.required'=> 'El nombre completo es obligatorio.'
         ]);
 
         try {
             if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                if (!$file->isValid()) {
-                    return back()->withErrors(['photo' => 'La imagen supera el límite de peso o está dañada. Intenta con una imagen más pequeña.'])->withInput();
-                }
-                $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
-                $destinationPath = public_path('uploads/clients');
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-                $file->move($destinationPath, $filename);
-                $validated['photo_path'] = 'uploads/clients/' . $filename;
+                $validated['photo_path'] = $this->savePhoto($request->file('photo'));
             }
             Client::create($validated);
             return redirect()->route('clients.index')->with('success', 'Cliente registrado exitosamente.');
         } catch (\Exception $e) {
-            return back()->withErrors(['photo' => 'Hubo un problema al registrar: ' . $e->getMessage()])->withInput();
+            return back()->withErrors(['photo' => 'Error al guardar la foto: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -69,41 +118,24 @@ class ClientController extends Controller
     public function update(Request $request, Client $client)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'ci' => 'required|string|max:20|unique:clients,ci,' . $client->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'latitude' => 'nullable|numeric',
+            'name'      => 'required|string|max:255',
+            'ci'        => 'required|string|max:20|unique:clients,ci,' . $client->id,
+            'phone'     => 'nullable|string|max:20',
+            'address'   => 'nullable|string',
+            'latitude'  => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
+            'photo'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
         try {
             if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                if (!$file->isValid()) {
-                    return back()->withErrors(['photo' => 'La imagen supera el límite de peso o está dañada. Intenta con una imagen más pequeña.'])->withInput();
-                }
-
-                if ($client->photo_path && file_exists(public_path($client->photo_path))) {
-                    @unlink(public_path($client->photo_path));
-                }
-                if ($client->photo_path && str_starts_with($client->photo_path, 'clients/')) {
-                    Storage::disk('public')->delete($client->photo_path);
-                }
-
-                $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-_\.]/', '', $file->getClientOriginalName());
-                $destinationPath = public_path('uploads/clients');
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-                $file->move($destinationPath, $filename);
-                $validated['photo_path'] = 'uploads/clients/' . $filename;
+                $this->deletePhoto($client->photo_path);
+                $validated['photo_path'] = $this->savePhoto($request->file('photo'));
             }
             $client->update($validated);
             return redirect()->route('clients.show', $client)->with('success', 'Datos del cliente actualizados exitosamente.');
         } catch (\Exception $e) {
-            return back()->withErrors(['photo' => 'Hubo un problema al actualizar: ' . $e->getMessage()])->withInput();
+            return back()->withErrors(['photo' => 'Error al guardar la foto: ' . $e->getMessage()])->withInput();
         }
     }
 }
