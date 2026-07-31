@@ -42,7 +42,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Fotografía del Cliente</label>
                     <div id="photo-drop-zone" class="relative flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-200 rounded-2xl bg-slate-50 cursor-pointer hover:border-teal-400 hover:bg-teal-50/40 transition-all duration-300 overflow-hidden" style="min-height: 140px;">
                         @if($client->photo_path)
-                            <img id="photo-preview" src="{{ asset($client->photo_path) }}" alt="Foto actual" class="absolute inset-0 w-full h-full object-cover rounded-2xl">
+                            <img id="photo-preview" src="{{ $client->photo_url }}" alt="Foto actual" class="absolute inset-0 w-full h-full object-cover rounded-2xl">
                             <div id="photo-hint" class="hidden flex-col items-center justify-center gap-2 py-6 px-4 z-10 text-center">
                         @else
                             <img id="photo-preview" src="" alt="preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl">

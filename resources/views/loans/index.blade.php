@@ -54,7 +54,7 @@
                     <td class="px-6 py-5 whitespace-nowrap">
                         <div class="flex items-center space-x-3">
                             @if($loan->client->photo_path)
-                                <img src="{{ asset($loan->client->photo_path) }}" alt="{{ $loan->client->name }}" class="flex-shrink-0 h-10 w-10 rounded-full object-cover shadow-sm border border-gray-200">
+                                <img src="{{ $loan->client->photo_url }}" alt="{{ $loan->client->name }}" class="flex-shrink-0 h-10 w-10 rounded-full object-cover shadow-sm border border-gray-200">
                             @else
                                 <div class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold shadow-inner border border-slate-200">
                                     {{ strtoupper(substr($loan->client->name, 0, 1)) }}

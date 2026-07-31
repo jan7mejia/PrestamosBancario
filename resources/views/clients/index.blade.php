@@ -54,7 +54,7 @@
                         <td class="px-6 py-5 whitespace-nowrap">
                             <div class="flex items-center">
                                 @if($client->photo_path)
-                                    <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="flex-shrink-0 h-10 w-10 rounded-full object-cover shadow-sm border border-gray-200">
+                                    <img src="{{ $client->photo_url }}" alt="{{ $client->name }}" class="flex-shrink-0 h-10 w-10 rounded-full object-cover shadow-sm border border-gray-200">
                                 @else
                                     <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-teal-100 to-emerald-100 rounded-full flex items-center justify-center text-teal-600 font-bold shadow-inner">
                                         {{ strtoupper(substr($client->name, 0, 1)) }}
@@ -131,7 +131,7 @@
             @if($client->latitude && $client->longitude)
                 @php
                     $deuda = $client->loans->flatMap->amortizations->where('status', 'pending')->sum('installment_amount');
-                    $foto = $client->photo_path ? asset($client->photo_path) : null;
+                    $foto = $client->photo_url;
                 @endphp
                 
                 var popupContent = `

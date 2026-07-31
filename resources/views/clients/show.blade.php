@@ -18,7 +18,7 @@
     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-5 w-full md:w-auto">
         {{-- Avatar Grande --}}
         @if($client->photo_path)
-            <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" onclick="openPhotoModal()" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white cursor-pointer hover:scale-105 transition-transform">
+            <img src="{{ $client->photo_url }}" alt="{{ $client->name }}" onclick="openPhotoModal()" class="w-20 h-20 object-cover rounded-3xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white cursor-pointer hover:scale-105 transition-transform">
         @else
             <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-teal-500/30 flex-shrink-0 mx-auto sm:mx-0 border-2 border-white">
                 {{ strtoupper(substr($client->name, 0, 1)) }}
@@ -210,7 +210,7 @@
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
     </button>
     <div class="relative w-full max-w-3xl flex flex-col items-center p-4 mt-12 sm:mt-0" style="z-index: 99999;">
-        <img src="{{ asset($client->photo_path) }}" alt="{{ $client->name }}" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-white object-contain">
+        <img src="{{ $client->photo_url }}" alt="{{ $client->name }}" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-white object-contain">
     </div>
 </div>
 @endif

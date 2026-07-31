@@ -31,7 +31,7 @@
                         <select id="client_id" name="client_id" required class="block w-full bg-white border border-gray-200 rounded-xl shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
                             <option value="">Seleccione un cliente de la cartera...</option>
                             @foreach($clients as $client)
-                                <option value="{{ $client->id }}" data-photo="{{ $client->photo_path ? asset($client->photo_path) : '' }}" data-initial="{{ strtoupper(substr($client->name, 0, 1)) }}">{{ $client->name }} - CI: {{ $client->ci }}</option>
+                                <option value="{{ $client->id }}" data-photo="{{ $client->photo_url }}" data-initial="{{ strtoupper(substr($client->name, 0, 1)) }}">{{ $client->name }} - CI: {{ $client->ci }}</option>
                             @endforeach
                         </select>
                     </div>
