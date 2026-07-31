@@ -21,9 +21,18 @@ class ClientController extends Controller
         $extension = $file->getClientOriginalExtension();
         $filename  = 'clients/' . time() . '_' . uniqid() . '.' . $extension;
 
-        // Si está configurado S3 (en Render), subir a S3
         if (config('filesystems.default') === 's3' || env('FILESYSTEM_DISK') === 's3') {
             Storage::disk('s3')->put($filename, file_get_contents($file), 'public');
+            
+            // Construir URL pública de Supabase manualmente si no está configurado AWS_URL
+            $endpoint = config('filesystems.disks.s3.endpoint'); // ej: https://xxxx.supabase.co/storage/v1/s3
+            $bucket = config('filesystems.disks.s3.bucket');
+            
+            if (str_contains($endpoint, 'supabase.co')) {
+                $publicEndpoint = str_replace('/s3', '/object/public/' . $bucket, $endpoint);
+                return $publicEndpoint . '/' . $filename;
+            }
+
             return Storage::disk('s3')->url($filename);
         }
 
