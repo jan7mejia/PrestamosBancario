@@ -22,7 +22,7 @@ class ClientController extends Controller
         $filename  = 'clients/' . time() . '_' . uniqid() . '.' . $extension;
 
         if (config('filesystems.default') === 's3' || env('FILESYSTEM_DISK') === 's3') {
-            Storage::disk('s3')->put($filename, file_get_contents($file), 'public');
+            Storage::disk('s3')->put($filename, file_get_contents($file));
             
             // Construir URL pública de Supabase a prueba de errores
             $endpoint = config('filesystems.disks.s3.endpoint');
