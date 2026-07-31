@@ -30,7 +30,8 @@ class ClientController extends Controller
             
             if (str_contains((string)$endpoint, 'supabase.co')) {
                 $parsed = parse_url($endpoint);
-                $baseUrl = $parsed['scheme'] . '://' . $parsed['host'];
+                $host = str_replace('.storage.', '.', $parsed['host']);
+                $baseUrl = $parsed['scheme'] . '://' . $host;
                 return $baseUrl . '/storage/v1/object/public/' . $bucket . '/' . $filename;
             }
 
